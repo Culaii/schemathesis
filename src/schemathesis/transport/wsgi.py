@@ -9,6 +9,7 @@ from urllib.parse import urlsplit, urlunsplit
 from typing_extensions import override
 
 from schemathesis.core import Body, NotSet, media_types
+from schemathesis.core.file_samples import MEDIA_TYPE_FILE_SAMPLES
 from schemathesis.core.rate_limit import ratelimit
 from schemathesis.core.timing import Instant
 from schemathesis.core.transforms import merge_at, to_wire_text
@@ -312,6 +313,6 @@ def text_serializer(ctx: SerializationContext, value: Body) -> dict[str, Any]:
     return {"data": to_wire_text(value)}
 
 
-@WSGI_TRANSPORT.serializer("application/octet-stream")
+@WSGI_TRANSPORT.serializer("application/octet-stream", *MEDIA_TYPE_FILE_SAMPLES)
 def binary_serializer(ctx: SerializationContext, value: Body) -> dict[str, Any]:
     return {"data": serialize_binary(value)}

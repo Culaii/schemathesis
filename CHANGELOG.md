@@ -9,6 +9,10 @@
 
 ## [4.32.2](https://github.com/schemathesis/schemathesis/compare/v4.32.1...v4.32.2) - 2026-10-20
 
+### :rocket: Added
+
+- Built-in PNG, JPEG, GIF and WebP request bodies for `image/*` media types.
+
 ### :racing_car: Performance
 
 - ~10% faster coverage phase on deeply nested request bodies.

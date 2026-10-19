@@ -53,7 +53,7 @@ from schemathesis.specs.openapi.coverage._wire import stringify_value
 from schemathesis.specs.openapi.error_feedback import apply_adjustments
 from schemathesis.specs.openapi.utils import parameter_types, sent_text_is_valid
 from schemathesis.transport.prepare import prepare_path
-from schemathesis.transport.serialization import quote_all
+from schemathesis.transport.serialization import Binary, quote_all
 
 if TYPE_CHECKING:
     from hypothesis.strategies import SearchStrategy
@@ -951,6 +951,19 @@ def _body_cases(run: CoverageRun) -> Generator[Case, None, None]:
                 (media_type, None, value)
                 for media_type, value in _generate_coverage_values_from_custom_strategy(body.media_type)
             ]
+            if not custom_values:
+                custom_values = [
+                    (
+                        media_type,
+                        None,
+                        GeneratedValue.with_positive(
+                            value=Binary(sample),
+                            scenario=CoverageScenario.EXAMPLE_VALUE,
+                            description=f"File sample: {media_type}",
+                        ),
+                    )
+                    for media_type, sample in body.iter_file_samples(body.media_type)
+                ]
 
         if custom_values:
             first_media_type, first_content_types, first_custom_value = custom_values[0]

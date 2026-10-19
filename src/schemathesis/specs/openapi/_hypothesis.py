@@ -87,7 +87,7 @@ from schemathesis.specs.openapi.negative import (
 )
 from schemathesis.specs.openapi.negative.mutations import has_negatable_target
 from schemathesis.specs.openapi.negative.utils import is_binary_format
-from schemathesis.transport.serialization import quote_all
+from schemathesis.transport.serialization import Binary, quote_all
 
 if TYPE_CHECKING:
     from schemathesis.generation.dictionaries import DictionaryDraw
@@ -689,6 +689,11 @@ def _get_body_strategy(
         # In negative mode, bypassing them would generate non-bytes values (e.g., integers)
         # that can't be sent over HTTP for raw binary media types like application/x-tar.
         return custom_strategy
+
+    file_sample = next(parameter.iter_file_samples(media_type), None)
+    if file_sample is not None and generation_mode.is_positive:
+        strategy = st.just(Binary(file_sample[1]))
+        return _maybe_set_optional_body(strategy, parameter, operation, draw, feedback.error_feedback)
 
     # Use the cached strategy from the parameter
     strategy = parameter.get_strategy(
